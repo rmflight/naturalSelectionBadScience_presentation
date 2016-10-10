@@ -319,7 +319,7 @@ PeerJ 2016</figcaption>
 ## Novel Studies Only & Constant Effort
 
 <figure>
-<img src = "other_figs/F3.large.jpg" height = "500">
+<img src = "other_figs/F3.large.jpg" height = "450">
 <figcaption>Figure 3. Power evolves. The evolution of mean power (W), false-positive rate (α) and false discovery rate (FDR).</figcaption>
 </figure>
 
