@@ -316,7 +316,7 @@ PeerJ 2016</figcaption>
 
 <img src = "other_figs/table1.png" height = "600">
 
-## Novel Studies Only
+## Novel Studies Only & Constant Effort
 
 <figure>
 <img src = "other_figs/F3.large.jpg" height = "500">
