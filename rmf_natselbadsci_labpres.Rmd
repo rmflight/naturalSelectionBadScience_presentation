@@ -272,7 +272,7 @@ PeerJ 2016</figcaption>
 * Increasing effort decreases the productivity of a lab, because it takes longer to perform rigorous research
 * Effort and power are independent parameters
 * Power, effort, FPR interrelated throughout the simulation
-* Fitness determined by Num. publications
+* **Fitness determined by Num. publications**
 </div>
 
 <div id = "right">
@@ -295,17 +295,16 @@ PeerJ 2016</figcaption>
 
 * **Positive** novel results are **always** publishable
 * **Negative** novel results **never** are
-* Positive and negative replications are communicated with probabilities cR+ and cR−, respectively
-* Communicated results enter the published literature
-    * Payoffs for communication
-    * Different for novel *vs* replicated
+* Positive and negative replications are published with probabilities cR+ and cR−, respectively
+* Increased publications increases lab fitness
+* Different for novel *vs* replicated
     
 ## Model: Selection & Replication
 
 * Oldest lab dies
-* From random sample of labs, highest payoff lab replicates
+* From random sample of labs, most fit lab replicates
     * Number of publications is measure of fitness
-* Favor those strategies that increase payoff most quickly
+* Favor those strategies that increase fitness (publications) most quickly
 * New lab inherits most successful lab, with mutation
 
 ## Running Simulation
