@@ -11,7 +11,7 @@ output:
 ## Heritability of Bad Science?
 
 * [**The natural selection of bad science**](http://rsos.royalsocietypublishing.org/content/3/9/160384)
-    * Paul E. Smaldino, Richard McElreath, RSOS, 21 September 2016 DOI: 10.1098/rsos.160384
+    * Smaldino & McElreath, RSOS, 21 September 2016 DOI: 10.1098/rsos.160384
 * [**The Inevitable Evolution of Bad Science**](http://www.theatlantic.com/science/archive/2016/09/the-inevitable-evolution-of-bad-science/500609/)
     * Ed Yong, The Atlantic, 21 September 2016
 
@@ -81,11 +81,14 @@ jitter_data <- function(grp_frame){
 ## Example
 
 ```{r power_example1, include=FALSE}
-start_data <- runif(200, 0, 1)
+start_data <- rnorm(200, 0, 0.3)
 
 grp_1_index <- sample(200, 100)
 grp_1 <- start_data[grp_1_index]
 grp_2 <- start_data[-grp_1_index]
+
+grp_1 <- grp_1 - mean(grp_1)
+grp_2 <- grp_2 - mean(grp_2)
 
 grp_diff_05 <- data_w_offset(grp_1, grp_2, offset = 0.5)
 ```
@@ -104,7 +107,7 @@ cut_value <- -1 * log10(0.05)
 cut_data <- data.frame(try = c(0, 50),
                        p.value = c(cut_value, cut_value))
 
-cut_plot <- ggplot(cut_data, aes(x = try, y = p.value)) + geom_line(color = "red") + coord_cartesian(xlim = x_range, ylim = y_range)
+cut_plot <- ggplot(cut_data, aes(x = try, y = p.value)) + geom_line(color = "red") + coord_cartesian(xlim = x_range, ylim = y_range) + ylab("-log10(p.value)")
 sig_data <- data.frame(try = seq(1, 50),
                        p.value = NA)
 init_plot <- plot_grid(jitter_plot, cut_plot, nrow = 1)
@@ -116,7 +119,7 @@ for (isim in 1:50) {
   diff_sample <- sample_n(diff_05_jitter, 3)
   j_plot <- jitter_plot + geom_point(data = diff_sample, aes(x = x, y = data), size = 3, color = "red")
   sig_data[isim, "p.value"] <- -1 * log10(run_ttest(ungroup(diff_sample))$p.value)
-  c_plot <- cut_plot + geom_point(data = sig_data, size = 3) + coord_cartesian(xlim = x_range, ylim = y_range)
+  c_plot <- cut_plot + geom_point(data = sig_data, size = 3) + coord_cartesian(xlim = x_range, ylim = y_range) + ylab("-log10(p.value)")
   
   curr_plot <- plot_grid(j_plot, c_plot, nrow = 1)
   print(curr_plot)
@@ -144,7 +147,7 @@ ggplot(power_values, aes(x = n, y = power)) + geom_line() + ggtitle("P = 0.05, D
 ```{r unpublished_results, fig.height=5}
 published_data <- filter(sig_data, p.value >= (-1 * log10(0.05)))
 
-pub_plot <- cut_plot + geom_point(data = sig_data, size = 3) + geom_point(data = published_data, size = 3, color = "green") + coord_cartesian(xlim = x_range, ylim = y_range)
+pub_plot <- cut_plot + geom_point(data = sig_data, size = 3) + geom_point(data = published_data, size = 3, color = "green") + coord_cartesian(xlim = x_range, ylim = y_range) + ylab("-log10(p.value)")
 plot_grid(jitter_plot, pub_plot, nrow = 1)
 ```
 
@@ -152,7 +155,7 @@ plot_grid(jitter_plot, pub_plot, nrow = 1)
 ## What About False Positives?
 
 ```{r sample_power_fp, fig.show = "animate"}
-grp_diff_0 <- data_w_offset(grp_1, grp_2)
+grp_diff_0 <- data_w_offset(grp_1, grp_2, 0.01)
 diff_0_jitter <- jitter_data(grp_diff_0) %>% group_by(grp)
 
 jitter_plot <- ggplot(diff_0_jitter, aes(x = x, y = data)) + geom_point(size = 3) + theme(legend.position = "none")
@@ -166,7 +169,7 @@ cut_value <- -1 * log10(0.05)
 cut_data <- data.frame(try = c(0, 50),
                        p.value = c(cut_value, cut_value))
 
-cut_plot <- ggplot(cut_data, aes(x = try, y = p.value)) + geom_line(color = "red") + coord_cartesian(xlim = x_range, ylim = y_range)
+cut_plot <- ggplot(cut_data, aes(x = try, y = p.value)) + geom_line(color = "red") + coord_cartesian(xlim = x_range, ylim = y_range) + ylab("-log10(p.value)")
 sig_data <- data.frame(try = seq(1, 50),
                        p.value = NA)
 init_plot <- plot_grid(jitter_plot, cut_plot, nrow = 1)
@@ -178,7 +181,7 @@ for (isim in 1:50) {
   diff_sample <- sample_n(diff_0_jitter, 3)
   j_plot <- jitter_plot + geom_point(data = diff_sample, aes(x = x, y = data), size = 3, color = "red")
   sig_data[isim, "p.value"] <- -1 * log10(run_ttest(ungroup(diff_sample))$p.value)
-  c_plot <- cut_plot + geom_point(data = sig_data, size = 3) + coord_cartesian(xlim = x_range, ylim = y_range)
+  c_plot <- cut_plot + geom_point(data = sig_data, size = 3) + coord_cartesian(xlim = x_range, ylim = y_range) + ylab("-log10(p.value)")
   
   curr_plot <- plot_grid(j_plot, c_plot, nrow = 1)
   print(curr_plot)
@@ -202,6 +205,7 @@ print(curr_plot)
 > * **Bad experimental design**
 >     * Confounding factors
 > * Multiple testing
+> * Developing more and more sensitive methods
 
 --------
 
@@ -209,31 +213,66 @@ print(curr_plot)
 > * Why? Because they get publications!
 > * Without malicious intent
 
-## Evidence
+## StatCheck
 
-* Power over time
-* Evolutionary model of labs, fitness defined by number of publications
+> We found that half of all published psychology papers ... contained at least one p-value that was inconsistent with its test,
 
-## Caveat
+<div id = "citation">MB Nuijten et al., Behav Res, 2015</div>
+
+> Most striking was that the errors weren’t entirely random. Most of the errors tipped the results in favor of statistical significance. And around 13 percent of the papers contained an error that could potentially change the paper’s conclusions.
+
+<div id = "citation">B Resnick, Vox, 2016</div>
+
+## Malicious Intent?
+
+<figure>
+<img src = "other_figs/manipulated_trimmed.jpg">
+<figcaption>Samie et al., Scientific Reports 2016</br>
+Front. Pharmacol 2016</br>
+PeerJ 2016</figcaption>
+</figure>
+
+## Paper
+
+> * *Why do false positive results litter the publication record?*
+> * Statistical power over time
+> * Evolutionary model of labs, fitness defined by number of publications
+> * Trying to **model** possible **causes** and effect of 1 **intervention** 
+
+## Caveats
 
 * Examined Social Studies and Psychology
 * But I believe results apply to Biological Sciences
 
-## Has Power of Studies Improved Over Time?
+## Has Statistical Power of Studies Improved Over Time?
 
 <figure>
   <img src = "other_figs/F1.large.jpg" height = "400">
   <figcaption>Figure 1. Average statistical power from 44 reviews of papers published in journals in the social and behavioural sciences between 1960 and 2011. Data are power to detect small effect sizes (d=0.2), assuming a false-positive rate of α=0.05, and indicate both very low power (mean=0.24) but also no increase over time (R2=0.00097).</figcaption>
 </figure>
 
+## Model
+
+<div id = "left">
+* Computable model of labs + publications
+* **Power**: think it corresponds to **sensitivity** (true positive rate)
+    * Increasing sensitivity == decreasing specificity
+* Expending **effort** reduces false positives
+</div>
+<div id = "right">
+<img src = "other_figs/tpr_fpr.png">
+</div>
+
 ## Model: Labs
 
-<div id = "left" style = "font-size: 80%;">
-* Each lab has a characteristic power, the ability to positively identify a true association
+<div id = "left" style = "font-size: 75%;">
+* Lab has a characteristic **power** (sensitivity or TPR)
     * Combination of entire chain of inference
-* Increasing power also increases the rate of false positives, unless effort is exerted
+* Increasing **power** also increases labs **FPR**, unless **effort** is exerted
 * Increasing effort decreases the productivity of a lab, because it takes longer to perform rigorous research
-* Effort and power are independent
+* Effort and power are independent parameters
+* Power, effort, FPR interrelated throughout the simulation
+* Fitness determined by Num. publications
 </div>
 
 <div id = "right">
@@ -243,15 +282,19 @@ print(curr_plot)
 
 ## Model: Experiments
 
-* Three phases: hypothesis selection, investigation and communication
+* Three phases: 
+    * hypothesis selection
+    * investigation 
+    * communication
 * Novel hypothesis or replication
-* When true hypotheses are rarer, false discoveries will occur more frequently
-* Increases in effort do not also increase power
-* Makes sense when power is maintained by contingent procedures that are invoked conditional on the nature of the evidence
+* When true hypotheses are rarer, false positives will occur more frequently
+* Increases in effort do not also increase power (sensitivity), but reduce FPR
+* Makes sense when power is dependent on the type of experiment or analytical method
 
 ## Model: Publication
 
-* Assume that positive novel results are always publishable, while negative novel results never are
+* **Positive** novel results are **always** publishable
+* **Negative** novel results **never** are
 * Positive and negative replications are communicated with probabilities cR+ and cR−, respectively
 * Communicated results enter the published literature
     * Payoffs for communication
@@ -299,18 +342,23 @@ print(curr_plot)
 ## Fix via Replication??
 
 <figure>
-<img src = "other_figs/F5.large.jpg">
+<img src = "other_figs/F5.large.jpg" height = "400">
 <figcaption>Figure 5. The coevolution of effort and replication.</figcaption>
 </figure>
 
 ## Fix via Replication??
 
 * Fix replication rate at **high** values
+* Test
+    * 0%
+    * 25%
+    * 50%
+* Examine evolution of effort
 
 ## Fix via Replication??
 
 <figure>
-<img src = "other_figs/F6.large.jpg">
+<img src = "other_figs/F6.large.jpg" height = "400">
 <figcaption>Figure 6. The evolution of effort when zero, 25% or 50% of all studies performed are replications.
 </figcaption>
 </figure>
@@ -339,5 +387,7 @@ print(curr_plot)
 
 ## Conclusions
 
-* Replication alone will not solve the current problem of high false-positives
+* Using num. of publications to judge researchers *may* be *partly* responsible for current glut
+of high false-positive results
+* *Replication alone* will not solve the current problem of high false-positives
 * Need to change the currency of academia
