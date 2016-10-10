@@ -13,7 +13,7 @@ output:
 * [**The natural selection of bad science**](http://rsos.royalsocietypublishing.org/content/3/9/160384)
     * Smaldino & McElreath, RSOS, 21 September 2016 DOI: 10.1098/rsos.160384
 * [**The Inevitable Evolution of Bad Science**](http://www.theatlantic.com/science/archive/2016/09/the-inevitable-evolution-of-bad-science/500609/)
-    * Ed Yong, The Atlantic, 21 September 2016
+    * Yong, The Atlantic, 21 September 2016
 
 ## TL;DR
 
